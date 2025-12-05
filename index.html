@@ -958,6 +958,91 @@
   }
 </style>
 
+
+<!-- FINAL FONT SCALE FIX -->
+<style>
+  :root {
+    --base-font-size: 16px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: var(--base-font-size) !important;
+    line-height: 1.6 !important;
+    color: #111111 !important;
+    background: #ffffff !important;
+  }
+
+  /* Başlık / üst bar */
+  header, h1, h2, h3, nav, .header-bar, .top-bar {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Model rozetleri (gpt-4.1 / mini, Sonnet 4.5 vs.) */
+  .model-pill, .model-tag, .model-badge, .pill, .chip {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+
+  /* Prompt input alanları */
+  textarea, input[type="text"], .prompt-input, .prompt-area {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Çıktı panelleri (her iki taraf) */
+  .output-panel,
+  .output-box,
+  .output,
+  .response-area,
+  .response-box,
+  #openai-output,
+  #chatgpt-output,
+  #anthropic-output,
+  #claude-output {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    color: #111111 !important;
+    background: #ffffff !important;
+  }
+
+  .output-panel *,
+  .output-box *,
+  .output *,
+  .response-area *,
+  .response-box *,
+  #openai-output *,
+  #chatgpt-output *,
+  #anthropic-output *,
+  #claude-output * {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    color: #111111 !important;
+  }
+
+  /* Küçük yardımcı yazılar */
+  small, .helper-text, .hint, .subtext {
+    font-size: 13px !important;
+  }
+
+  /* Butonlar */
+  button,
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Geniş ekranlarda çok yayılmasın diye gövdeyi ortala */
+  main, .app-root, .page-wrapper, .container, .shell {
+    max-width: 1280px !important;
+    margin: 0 auto !important;
+  }
+</style>
+
 </head>
 <body>
 
