@@ -1,1335 +1,625 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
+  <meta charset="UTF-8" />
+  <title>Dual AI Console — Zero@Ecosystem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- FORCE FONT SCALE FIX v4 — DO NOT REMOVE -->
-<style id="font-fix-v4">
-  html, body {
-    font-size: 14px !important;
-    line-height: 1.4 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Arial, sans-serif !important;
-  }
-
-  textarea, input, .prompt-input, .prompt-area {
-    font-size: 14px !important;
-    line-height: 1.4 !important;
-  }
-
-  .output-panel, .output-box, .response-area, .response-box,
-  #openai-output, #claude-output {
-    font-size: 14px !important;
-    line-height: 1.4 !important;
-  }
-
-  button, .btn {
-    font-size: 13px !important;
-  }
-</style>
-
-  <meta charset="utf-8" />
-  <title>Dual AI Console — Cem Edition</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
+    :root {
+      --zero-navy: #02154e;
+      --zero-orange: #f9ba00;
+      --zero-green: #005530;
+      --zero-red: #D51635;
+      --zero-white: #ffffff;
+      --zero-black: #111111;
+      --zero-gray-dark: #555555;
+      --zero-gray-medium: #9E9E9E;
+      --zero-gray-light: #e0e0e0;
+      --zero-gray-bg: #f5f5f7;
+
+      --zero-space-xs: 0.5rem;
+      --zero-space-sm: 1rem;
+      --zero-space-md: 1.5rem;
+      --zero-space-lg: 2.5rem;
+
+      --zero-radius-sm: 6px;
+      --zero-radius-md: 10px;
+      --zero-radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0b1220;
-      color: #e5e7eb;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      padding: 10px 16px;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(to right, #0b1220, #111827);
-    }
-    header h1 {
-      font-size: 16px;
-      margin: 0;
-    }
-    header span {
-      font-size: 12px;
-      color: #9ca3af;
-    }
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      overflow: hidden;
-    }
-    .panel {
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid #1f2937;
-    }
-    .panel:first-child {
-      border-left: none;
-      border-right: 1px solid #1f2937;
-    }
-    .panel-header {
-      padding: 8px 12px;
-      border-bottom: 1px solid #1f2937;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #020617;
-    }
-    .panel-header h2 {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                   "Helvetica Neue", Arial, sans-serif;
       font-size: 14px;
-      margin: 0;
+      line-height: 1.6;
+      background: var(--zero-gray-bg);
+      color: var(--zero-black);
+      padding-top: 4px;
+    }
+
+    /* Üst renk şeridi (Zero@Steel tarzı) */
+    .zero-color-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(
+        90deg,
+        var(--zero-green) 0%,   var(--zero-green) 25%,
+        var(--zero-red) 25%,    var(--zero-red) 50%,
+        var(--zero-navy) 50%,   var(--zero-navy) 75%,
+        var(--zero-orange) 75%, var(--zero-orange) 100%
+      );
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--zero-navy);
+      color: var(--zero-white);
+      padding: var(--zero-space-md);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      margin-top: 4px;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--zero-space-md);
+      justify-content: flex-start;
     }
-    .badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #111827;
-      color: #9ca3af;
-    }
-    .body {
-      flex: 1;
+
+    .title-group {
       display: flex;
       flex-direction: column;
-      padding: 8px;
-      gap: 8px;
-      overflow: hidden;
+      gap: 0.2rem;
     }
-    textarea {
-      width: 100%;
-      resize: none;
-      min-height: 80px;
-      border-radius: 8px;
-      border: 1px solid #374151;
-      background: #020617;
-      color: #e5e7eb;
-      padding: 8px;
-      font-size: 13px;
-      font-family: inherit;
+
+    .title-main {
+      font-size: 1.6rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
     }
-    textarea:focus {
-      outline: 1px solid #f97316;
-      border-color: #f97316;
+
+    .title-at {
+      color: var(--zero-orange);
     }
-    .output {
-      flex: 1;
-      border-radius: 8px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      padding: 8px;
-      font-size: 13px;
-      overflow-y: auto;
-      white-space: pre-wrap;
+
+    .subtitle-main {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.8);
     }
-    .controls {
+
+    .subtitle-row {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
-      font-size: 11px;
+      margin-top: 0.3rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.75);
     }
-    button {
+
+    .badge-soft {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 0.75rem;
+    }
+
+    /* Ana container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--zero-space-md);
+    }
+
+    /* Copy butonları */
+    .copy-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: var(--zero-space-md);
+      flex-wrap: wrap;
+    }
+
+    .btn-pill {
       border-radius: 999px;
       border: none;
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
-      background: #f97316;
-      color: #111827;
-      font-weight: 500;
+      background: var(--zero-orange);
+      color: #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
     }
-    button:disabled {
-      opacity: 0.6;
-      cursor: default;
+
+    .btn-pill:hover {
+      background: #d89b00;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
     }
-    select {
-      background: #020617;
-      color: #e5e7eb;
+
+    /* Dual layout */
+    .dual-layout {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .console-panel {
+      flex: 1 1 340px;
+      border-radius: var(--zero-radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      min-height: 340px;
+    }
+
+    .console-header {
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .console-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .console-title {
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .console-tag {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .model-pill {
       border-radius: 999px;
-      border: 1px solid #374151;
-      padding: 4px 8px;
-      font-size: 11px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(0,0,0,0.2);
+      white-space: nowrap;
     }
-    input[type="file"] {
-      font-size: 10px;
-      color: #9ca3af;
+
+    .model-pill-light {
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--zero-orange);
+      background: rgba(249,186,0,0.08);
+      color: var(--zero-black);
+      white-space: nowrap;
     }
-    .usage {
-      color: #6b7280;
-      font-size: 11px;
+
+    .console-body {
+      padding: 10px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
     }
+
+    .prompt-input {
+      width: 100%;
+      resize: vertical;
+      min-height: 130px;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      border: 1px solid var(--zero-gray-light);
+      font-family: inherit;
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .left-theme .prompt-input {
+      background: rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.18);
+      color: #f5f5f5;
+    }
+
+    .left-theme .prompt-input::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+
+    .right-theme .prompt-input {
+      background: #ffffff;
+      color: var(--zero-black);
+    }
+
+    .right-theme .prompt-input::placeholder {
+      color: var(--zero-gray-medium);
+    }
+
+    .prompt-input:focus {
+      border-color: var(--zero-orange);
+      box-shadow: 0 0 0 2px rgba(249,186,0,0.28);
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-send {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--zero-orange);
+      color: #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-send:hover {
+      background: #d89b00;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+    }
+
+    .file-label {
+      font-size: 0.75rem;
+      color: var(--zero-gray-medium);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .file-label input[type="file"] {
+      font-size: 0.7rem;
+    }
+
+    .tokens-label {
+      font-size: 0.75rem;
+      color: var(--zero-gray-medium);
+    }
+
+    .output-box {
+      margin-top: 6px;
+      border-radius: 10px;
+      border: 1px solid var(--zero-gray-light);
+      padding: 8px 10px;
+      min-height: 110px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      background: #ffffff;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .left-theme .output-box {
+      background: rgba(0,0,0,0.18);
+      border-color: rgba(255,255,255,0.15);
+      color: #f5f5f5;
+    }
+
+    .output-placeholder {
+      color: var(--zero-gray-medium);
+    }
+
+    .tip-row {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--zero-gray-medium);
+    }
+
+    .tip-row strong {
+      color: var(--zero-navy);
+    }
+
+    /* Tema varyantları */
+    .console-panel.left-theme {
+      background: radial-gradient(circle at top left, #2b3245 0%, #0b0f1b 45%, #05060a 100%);
+      color: #f5f5f5;
+    }
+
+    .console-panel.right-theme {
+      background: #fffdf7;
+      color: var(--zero-black);
+      border: 1px solid rgba(249,186,0,0.4);
+    }
+
+    .console-header.left-theme-header {
+      background: transparent;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .console-header.right-theme-header {
+      background: linear-gradient(135deg, #fff2c4 0%, #ffe9a0 60%, #ffe49a 100%);
+      border-bottom: 1px solid rgba(249,186,0,0.65);
+    }
+
+    .console-title-openai::before {
+      content: "🧡";
+      margin-right: 4px;
+    }
+
+    .console-title-claude::before {
+      content: "💙";
+      margin-right: 4px;
+    }
+
     footer {
-      padding: 4px 10px;
-      font-size: 10px;
-      color: #6b7280;
-      border-top: 1px solid #1f2937;
-      background: #020617;
+      margin-top: var(--zero-space-sm);
+      font-size: 0.75rem;
+      color: var(--zero-gray-medium);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-    }
-  </style>
-<!-- WHITE THEME PATCH START -->
-<style>
-  body { background:#ffffff !important; color:#111111 !important; }
-  .chat-column, .chat-panel, .chat-box {
-    background:#ffffff !important; border:1px solid #e0e0e0 !important;
-    border-radius:10px !important;
-  }
-  textarea, input[type=text], input[type=search] {
-    background:#fafafa !important; color:#111 !important;
-    border:1px solid #d0d0d0 !important; border-radius:8px !important;
-  }
-  header, nav, .navbar {
-    background:#ffffff !important; border-bottom:1px solid #e5e5e5 !important;
-  }
-</style>
-<!-- WHITE THEME PATCH END -->
-
-<!-- WHITE THEME V2 PATCH -->
-<style>
-  body {
-    background: #ffffff !important;
-    color: #111111 !important;
-    font-size: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  }
-
-  /* Ana iki panel + input/output alanları */
-  #openai-output, #anthropic-output,
-  #openai-input, #anthropic-input,
-  .chat-panel, .chat-column, .chat-box,
-  .output-box, .input-box {
-    background: #ffffff !important;
-    color: #111111 !important;
-    border-radius: 10px !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-
-  /* Textarea, pre, kod blokları */
-  textarea, pre, code {
-    font-size: 16px !important;
-    line-height: 1.5;
-    background: #fafafa !important;
-    color: #111111 !important;
-    border-radius: 8px !important;
-    border: 1px solid #d0d0d0 !important;
-  }
-
-  /* Butonlar daha okunaklı dursun */
-  button {
-    font-size: 14px;
-  }
-</style>
-<!-- /WHITE THEME V2 PATCH -->
-
-
-<!-- WHITE THEME V3 PATCH -->
-<style>
-  /* Global font & colors */
-  html, body {
-    background: #ffffff !important;
-    color: #111111 !important;
-    font-size: 18px !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  }
-
-  /* Bütün layout ve iki paneli zorla beyaz yap */
-  .app-root, .main-layout, .dual-console, .chat-layout,
-  .chat-columns, .chat-column, .chat-panel,
-  .left-pane, .right-pane, .column-left, .column-right,
-  #openai-panel, #anthropic-panel,
-  #openai-output, #anthropic-output {
-    background: #ffffff !important;
-    color: #111111 !important;
-    border-color: #e0e0e0 !important;
-  }
-
-  /* Mesaj kutuları, textarea vs. */
-  textarea, pre, code, .message, .chat-message, .output-box, .input-box {
-    font-size: 17px !important;
-    line-height: 1.55;
-    background: #fafafa !important;
-    color: #111111 !important;
-    border-radius: 8px !important;
-    border: 1px solid #d0d0d0 !important;
-  }
-
-  button {
-    font-size: 15px !important;
-  }
-</style>
-<!-- /WHITE THEME V3 PATCH -->
-
-
-<!-- WHITE THEME V4 PATCH – Nuclear Mode -->
-<style>
-  /* Global */
-  html, body {
-    background: #ffffff !important;
-    color: #111111 !important;
-    font-size: 18px !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-  }
-
-  /* All wrappers, left + right panels */
-  .container, .wrapper, .layout, .main-layout,
-  .dual-console, .chat-container,
-  .chat-columns, .chat-column,
-  .left-panel, .right-panel,
-  .column-left, .column-right,
-  .left-pane, .right-pane,
-  #openai-panel, #anthropic-panel,
-  #openai-output, #anthropic-output {
-      background: #ffffff !important;
-      color: #111111 !important;
-      border-color: #d0d0d0 !important;
-  }
-
-  /* Anything that looks like a chat box */
-  textarea, pre, code, .message, .chat-message,
-  .output-box, .input-box, .chat-output,
-  .result-window, .response-box {
-      background: #fafafa !important;
-      color: #111 !important;
-      font-size: 17px !important;
-      line-height: 1.55;
-      border: 1px solid #d0d0d0 !important;
-      border-radius: 8px !important;
-  }
-
-  /* Catch-all: any div with dark background */
-  div[style*="background:#0"], div[style*="background: #0"],
-  div[style*="background-color:#0"], div[style*="background-color: #0"],
-  div[style*="background:#1"], div[style*="background: #1"] {
-      background: #ffffff !important;
-      color: #111111 !important;
-  }
-
-</style>
-<!-- END WHITE THEME V4 PATCH -->
-
-
-<!-- WHITE THEME V5 – ULTRA OVERRIDE -->
-<style>
-  /* SAĞ PANEL İÇİN EVRENSEL BEYAZ TEMA */
-  .right-panel, .right-pane, .column-right, #claude-panel, #anthropic-panel,
-  .claude-container, .claude-column, .claude-side,
-  [class*="right"], [id*="right"], [class*="anthropic"], [id*="anthropic"] {
-      background: #ffffff !important;
-      color: #111 !important;
-  }
-
-  /* SAĞ CHAT OUTPUT KUTULARI */
-  #anthropic-output, #claude-output,
-  .right-output, .claude-output, .output-box {
-      background: #fafafa !important;
-      color: #111 !important;
-      font-size: 18px !important;
-      border: 1px solid #ccc !important;
-      border-radius: 8px !important;
-      padding: 12px !important;
-  }
-
-  /* SAĞ PANELDE BULUNAN TÜM DIVLERİ BEYAZLA */
-  #anthropic-panel div, #claude-panel div,
-  .right-panel div, .column-right div {
-      background-color: #ffffff !important;
-      color: #111 !important;
-  }
-
-  /* Koyu arka plan içeren her div’i yakala */
-  div[style*="rgb(0"], div[style*="#0"], div[style*="#1"] {
-      background: #ffffff !important;
-      color: #111 !important;
-  }
-</style>
-<!-- END WHITE THEME V5 -->
-
-
-<!-- TYPOGRAPHY PATCH V1 -->
-<style>
-  /* Global font (Apple tarzı, Türkçe karakter tam destek) */
-  html, body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", system-ui, -system-ui, sans-serif;
-    font-size: 18px !important;
-    line-height: 1.6;
-    color: #111111;
-  }
-
-  /* Üstteki prompt input alanları */
-  textarea,
-  .prompt-input,
-  .chat-input,
-  .input-box {
-    font-size: 18px !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Cevap alanları (output) */
-  #openai-output,
-  #anthropic-output,
-  .chat-output,
-  .response-box,
-  .output-box,
-  pre,
-  code {
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", system-ui, -system-ui, sans-serif;
-  }
-
-  /* Butonlar ve küçük metinler */
-  button,
-  .model-select,
-  .token-info,
-  .header-text,
-  .badge {
-    font-size: 15px !important;
-  }
-
-  /* Placeholder’lar da okunabilir olsun */
-  textarea::placeholder,
-  .prompt-input::placeholder {
-    font-size: 16px;
-    color: #777777;
-  }
-</style>
-<!-- /TYPOGRAPHY PATCH V1 -->
-
-
-<!-- TYPOGRAPHY PATCH V3 — ULTRA READABLE -->
-<style>
-  /* GLOBAL */
-  html, body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", system-ui, sans-serif !important;
-    font-size: 22px !important;     /* 🔥 TEMEL BOYUT ARTTI */
-    line-height: 1.75 !important;   /* Daha ferah */
-    color: #111 !important;
-  }
-
-  /* INPUT + PROMPT ALANLARI */
-  textarea,
-  input,
-  .prompt-input {
-    font-size: 22px !important;      /* 🔥 2 kat daha büyük */
-    line-height: 1.7 !important;
-    padding: 16px !important;
-  }
-
-  textarea::placeholder,
-  .prompt-input::placeholder {
-    font-size: 20px !important;
-    color: #777 !important;
-  }
-
-  /* CEVAP ALANLARI (OUTPUT) */
-  #openai-output,
-  #anthropic-output,
-  .chat-output,
-  .response-box,
-  .output-box,
-  pre,
-  code {
-    font-size: 24px !important;     /* 🔥 Cevap metni büyük */
-    line-height: 1.8 !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-    color: #111 !important;
-  }
-
-  /* BUTONLAR + SEÇİCİLER */
-  button,
-  .model-select,
-  .token-info,
-  .badge {
-    font-size: 18px !important;
-    padding: 10px 16px !important;
-  }
-</style>
-<!-- /TYPOGRAPHY PATCH V3 -->
-
-
-<!-- TYPOGRAPHY PATCH V4 — MAX READABLE UI -->
-<style>
-  /* Global base – HER ŞEYİN TEMELİ */
-  html, body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", system-ui, sans-serif !important;
-    font-size: 26px !important;       /* 🔥 temel boyut büyütüldü */
-    line-height: 1.8 !important;
-    color: #111111 !important;
-  }
-
-  /* Üst bar, menüler, nav */
-  header, nav, nav * ,
-  .top-bar, .top-bar * {
-    font-size: 24px !important;
-  }
-
-  /* Başlıklar */
-  h1 { font-size: 32px !important; }
-  h2 { font-size: 30px !important; }
-  h3 { font-size: 28px !important; }
-
-  /* Prompt input alanları */
-  textarea,
-  input,
-  .prompt-input,
-  .chat-input {
-    font-size: 28px !important;
-    line-height: 1.8 !important;
-    padding: 18px !important;
-  }
-
-  textarea::placeholder,
-  .prompt-input::placeholder {
-    font-size: 24px !important;
-    color: #777 !important;
-  }
-
-  /* ÇIKTI / CEVAP ALANLARI */
-  #openai-output,
-  #anthropic-output,
-  .chat-output,
-  .response-box,
-  .output-box,
-  pre,
-  code {
-    font-size: 28px !important;       /* 🔥 asıl okuduğun yer */
-    line-height: 1.9 !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-    color: #111 !important;
-  }
-
-  /* Butonlar, model seçici, token info vs. */
-  button,
-  .model-select,
-  select,
-  .token-info,
-  .badge,
-  .pill {
-    font-size: 22px !important;
-    padding: 10px 18px !important;
-  }
-</style>
-<!-- /TYPOGRAPHY PATCH V4 -->
-
-
-<!-- GLOBAL FONT OVERRIDE — ChatGPT placeholder style x2 -->
-<style>
-  /* Ana font — ChatGPT placeholder fontunun birebir aynısı */
-  :root {
-    --base-font: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-
-  /* Tüm UI’nin temel fontu — x2 büyütme */
-  html, body {
-    font-family: var(--base-font) !important;
-    font-size: 32px !important;     /* 🔥 placeholder’ın TAM 2X versiyonu */
-    line-height: 1.9 !important;
-    color: #111 !important;
-  }
-
-  /* Başlıklar */
-  h1 { font-size: 40px !important; font-weight: 600 !important; }
-  h2 { font-size: 36px !important; font-weight: 600 !important; }
-  h3 { font-size: 32px !important; font-weight: 500 !important; }
-
-  /* Model seçici, nav, üst menü */
-  nav, nav *, header, header * {
-    font-size: 28px !important;
-    font-weight: 500 !important;
-  }
-
-  /* Textarea: placeholder stili x2 */
-  textarea, .prompt-input {
-    font-size: 32px !important;
-    font-family: var(--base-font) !important;
-    padding: 20px !important;
-    line-height: 1.9 !important;
-  }
-
-  textarea::placeholder {
-    font-size: 28px !important;
-    color: #777 !important;
-    font-family: var(--base-font) !important;
-  }
-
-  /* Cevap alanları */
-  #openai-output,
-  #anthropic-output,
-  .response-box,
-  .output-box,
-  pre, code {
-    font-size: 32px !important;     /* 🔥 ana okuma alanı */
-    font-family: var(--base-font) !important;
-    line-height: 1.9 !important;
-    white-space: pre-wrap !important;
-  }
-
-  /* Butonlar */
-  button {
-    font-size: 26px !important;
-    font-family: var(--base-font) !important;
-    padding: 12px 22px !important;
-  }
-</style>
-<!-- /GLOBAL FONT OVERRIDE -->
-
-
-<!-- GLOBAL SUPER FONT OVERRIDE — x2 Bigger Again -->
-<style>
-  :root {
-    --base-font: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-
-  /* Ana body — tekrar 2× büyütme */
-  html, body {
-    font-family: var(--base-font) !important;
-    font-size: 52px !important;   /* 🔥 Önceki 26–32px seviyesinin TAM 2× */
-    line-height: 1.9 !important;
-    color: #111 !important;
-  }
-
-  /* HEADER — çok daha büyük */
-  header, nav, header *, nav * {
-    font-size: 48px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Başlık satırı “Dual AI Console — Zero@Ecosystem” */
-  h1, .title, .header-title {
-    font-size: 58px !important;
-    font-weight: 700 !important;
-  }
-
-  /* Model seçiciler (gpt-4.1 mini, Sonnet 4.5, vb.) */
-  .model-chip, .model-selector, .chip, .badge, .tag {
-    font-size: 40px !important;
-    padding: 12px 28px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Textarea giriş alanı */
-  textarea, .prompt-input {
-    font-size: 50px !important;    /* önceki boyutun 2×’i */
-    line-height: 1.9 !important;
-    padding: 22px !important;
-    font-family: var(--base-font) !important;
-  }
-
-  textarea::placeholder {
-    font-size: 46px !important;    /* 🔥 “Cevap burada görünecek…” için 2× */
-    color: #777 !important;
-  }
-
-  /* Cevap kutuları (ChatGPT & Claude) */
-  #openai-output,
-  #anthropic-output,
-  .response-box,
-  .output-box,
-  pre, code {
-    font-size: 50px !important;   /* 🔥 iki taraf da devasa ve eşit */
-    line-height: 1.9 !important;
-    white-space: pre-wrap !important;
-    font-family: var(--base-font) !important;
-  }
-
-  /* Claude tarafının placeholder’ı */
-  .claude-placeholder, #claude-output::before {
-    font-size: 46px !important;
-  }
-
-  /* Butonlar */
-  button {
-    font-size: 38px !important;
-    padding: 18px 30px !important;
-    font-weight: 600 !important;
-  }
-</style>
-<!-- /GLOBAL SUPER FONT OVERRIDE -->
-
-
-<!-- CLAUDE PLACEHOLDER + TOKENS FONT FIX -->
-<style>
-  /* Claude tarafı çıktı alanı + placeholder */
-  #anthropic-output,
-  #anthropic-output * {
-    font-size: 32px !important;
-    line-height: 1.7 !important;
-    color: #111 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  }
-
-  /* Ortak placeholder metinleri (her iki taraf için de) */
-  .output-placeholder,
-  .placeholder-text {
-    font-size: 32px !important;
-    color: #555 !important;
-  }
-
-  /* File upload ve Tokens satırı */
-  small,
-  .token-info,
-  .token-count,
-  .tokens-label {
-    font-size: 24px !important;
-    line-height: 1.5 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  }
-
-  /* Özellikle dosya seçim label’ı */
-  label[for*="file"],
-  .file-label {
-    font-size: 24px !important;
-    font-weight: 500 !important;
-  }
-</style>
-<!-- /CLAUDE PLACEHOLDER + TOKENS FONT FIX -->
-
-
-<style>
-  .copy-toolbar {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 12px 0 4px 0;
-  }
-  .copy-btn {
-    background: #f9ba00;
-    color: #000000;
-    border: none;
-    border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.14);
-    transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
-  }
-  .copy-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.18);
-  }
-</style>
-
-
-<!-- GLOBAL FONT OVERRIDE v5 (lighter) -->
-<style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  header, h1, h2, h3, nav, .header-bar, .top-bar {
-    font-size: 22px !important;
-    font-weight: 600 !important;
-  }
-
-  .model-pill, .model-tag, .model-badge, .pill, .chip {
-    font-size: 16px !important;
-    font-weight: 500 !important;
-  }
-
-  textarea,
-  input[type="text"],
-  .prompt-input,
-  .prompt-area {
-    font-size: 18px !important;
-    line-height: 1.6 !important;
-  }
-
-  small, .helper-text, .hint, .subtext, .token-info {
-    font-size: 14px !important;
-  }
-
-  .output-panel,
-  .output-box,
-  .output,
-  .response-area,
-  .response-box,
-  #openai-output,
-  #chatgpt-output,
-  #anthropic-output,
-  #claude-output {
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  .output-panel *,
-  .output-box *,
-  .output *,
-  .response-area *,
-  .response-box *,
-  #openai-output *,
-  #chatgpt-output *,
-  #anthropic-output *,
-  #claude-output * {
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-    color: #111111 !important;
-  }
-
-  .output-placeholder,
-  .placeholder,
-  #openai-output::before,
-  #anthropic-output::before,
-  #claude-output::before {
-    font-size: 18px !important;
-    color: #777777 !important;
-  }
-
-  .copy-btn,
-  button,
-  .btn,
-  .btn-primary,
-  .btn-secondary {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-  }
-</style>
-
-
-<!-- INPUT HEIGHT BOOST v1 -->
-<style>
-  textarea,
-  .prompt-input,
-  .prompt-area {
-      min-height: 180px !important;   /* önceki ~90px ise tam 2 katı */
-      height: 180px !important;
-      max-height: 350px !important;
-      padding: 14px !important;
-  }
-</style>
-
-
-<!-- CEM VIEWPORT SCALE FIX -->
-<style>
-  /* Genel gövde – prod için biraz küçültülmüş temel */
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-size: 16px !important;      /* önceki “dev” halinin ~%80’i */
-    line-height: 1.7 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  /* Üst başlık / header */
-  h1, header .title {
-    font-size: 26px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Üstteki açıklama satırı (Left: ChatGPT / Right: Claude vs.) */
-  .subtitle, header p {
-    font-size: 18px !important;
-  }
-
-  /* Model rozetleri (gpt-4.1 / mini, Sonnet 4.5 vb.) */
-  .model-pill, .model-tag, .model-badge, .pill, .chip {
-    font-size: 15px !important;
-    font-weight: 500 !important;
-  }
-
-  /* Prompt yazdığın textarea’lar */
-  textarea,
-  .prompt-input,
-  .prompt-area {
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-  }
-
-  /* Çıktı / cevap panelleri */
-  .output-panel,
-  .output-box,
-  .response-area,
-  .response-box,
-  #openai-output,
-  #chatgpt-output,
-  #anthropic-output,
-  #claude-output {
-    font-size: 18px !important;
-    line-height: 1.8 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  .output-panel *,
-  .output-box *,
-  .response-area *,
-  .response-box *,
-  #openai-output *,
-  #chatgpt-output *,
-  #anthropic-output *,
-  #claude-output * {
-    font-size: 18px !important;
-    line-height: 1.8 !important;
-  }
-
-  /* “Cevap burada görünecek...” placeholder’ları */
-  .output-placeholder,
-  .placeholder,
-  #openai-output::before,
-  #anthropic-output::before,
-  #claude-output::before {
-    font-size: 18px !important;
-    color: #777777 !important;
-  }
-
-  /* Copy butonları, Send to OpenAI / Claude butonları */
-  button,
-  .btn,
-  .btn-primary,
-  .btn-secondary {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Ana satırları biraz merkezi ve derli toplu gösterelim */
-  .top-row,
-  .panel-row {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-</style>
-
-
-<!-- VIEW FIX v2: smaller fonts + nicer scale -->
-<style>
-  /* Genel fontu biraz küçült, ama okunur kalsın */
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Arial, sans-serif !important;
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-    background: #ffffff !important;
-    color: #111111 !important;
-  }
-
-  /* Başlık ve ana bar */
-  header, h1, h2, h3, nav {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Prompt input alanları */
-  textarea, input[type="text"], .prompt-input {
-    font-size: 15px !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Çıktı panelleri */
-  .output-panel,
-  .output-box,
-  .response-area,
-  .response-box {
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Copy butonları ve diğer butonlar */
-  button,
-  .btn {
-    font-size: 14px !important;
-    font-weight: 600 !important;
-  }
-</style>
-
-
-<!-- FINAL FONT SCALE FIX -->
-<style>
-  :root {
-    --base-font-size: 16px;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-size: var(--base-font-size) !important;
-    line-height: 1.6 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  /* Başlık / üst bar */
-  header, h1, h2, h3, nav, .header-bar, .top-bar {
-    font-size: 20px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Model rozetleri (gpt-4.1 / mini, Sonnet 4.5 vs.) */
-  .model-pill, .model-tag, .model-badge, .pill, .chip {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-  }
-
-  /* Prompt input alanları */
-  textarea, input[type="text"], .prompt-input, .prompt-area {
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Çıktı panelleri (her iki taraf) */
-  .output-panel,
-  .output-box,
-  .output,
-  .response-area,
-  .response-box,
-  #openai-output,
-  #chatgpt-output,
-  #anthropic-output,
-  #claude-output {
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-    color: #111111 !important;
-    background: #ffffff !important;
-  }
-
-  .output-panel *,
-  .output-box *,
-  .output *,
-  .response-area *,
-  .response-box *,
-  #openai-output *,
-  #chatgpt-output *,
-  #anthropic-output *,
-  #claude-output * {
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-    color: #111111 !important;
-  }
-
-  /* Küçük yardımcı yazılar */
-  small, .helper-text, .hint, .subtext {
-    font-size: 13px !important;
-  }
-
-  /* Butonlar */
-  button,
-  .btn,
-  .btn-primary,
-  .btn-secondary {
-    font-size: 15px !important;
-    font-weight: 600 !important;
-  }
-
-  /* Geniş ekranlarda çok yayılmasın diye gövdeyi ortala */
-  main, .app-root, .page-wrapper, .container, .shell {
-    max-width: 1280px !important;
-    margin: 0 auto !important;
-  }
-</style>
-
-</head>
-<body>
-
-<!-- FORCE FONT FIX v3 -->
-<style id="force-font-fix">
-  html, body {
-    font-size: 14px !important;
-    line-height: 1.4 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Helvetica Neue", Arial, sans-serif !important;
-  }
-
-  textarea, input, .prompt-input {
-    font-size: 14px !important;
-  }
-
-  .output-panel, .output-box, .response-area, .response-box {
-    font-size: 14px !important;
-  }
-
-  button, .btn {
-    font-size: 13px !important;
-  }
-</style>
-
-<header>
-  <div>
-    <h1>Dual AI Console — Zero@Ecosystem</h1>
-    <span>Left: ChatGPT/OpenAI · Right: Claude (Anthropic)</span>
-  </div>
-  <span>Local · Pay-as-you-go via API keys</span>
-</header>
-
-<div class="copy-toolbar">
-  <button class="copy-btn" onclick="copyPromptLeftToRight()">Copy → Claude</button>
-  <button class="copy-btn" onclick="copyPromptRightToLeft()">Copy → ChatGPT</button>
-</div>
-
-<main>
-  <!-- LEFT PANEL: OPENAI / CHATGPT -->
-  <section class="panel" id="openai-panel">
-    <div class="panel-header">
-      <h2>🧡 ChatGPT / OpenAI <span class="badge">gpt-4.1 / mini</span></h2>
-      <select id="openai-model">
-        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
-        <option value="gpt-4.1">gpt-4.1</option>
-      </select>
-    </div>
-    <div class="body">
-      <textarea id="openai-input" placeholder="Buraya bana soracağın şeyi yaz... (solda Chatty / OpenAI tarafı)"></textarea>
-      <div class="controls">
-        <button id="openai-send">Send to OpenAI</button>
-        <input type="file" id="openai-file" multiple />
-        <span class="usage" id="openai-usage">Tokens: -</span>
-      </div>
-      <div class="output" id="openai-output">Cevap burada görünecek...</div>
-    </div>
-  </section>
-
-  <!-- RIGHT PANEL: CLAUDE -->
-  <section class="panel" id="claude-panel">
-    <div class="panel-header">
-      <h2>💙 Claude / Anthropic <span class="badge">Sonnet / Opus / Haiku</span></h2>
-      <select id="claude-model">
-        <option value="claude-sonnet-4-5-20250929">Sonnet 4.5</option>
-        <option value="claude-opus-4-5-20251101">Opus 4.5</option>
-        <option value="claude-haiku-4-5-20251001">Haiku 4.5</option>
-      </select>
-    </div>
-    <div class="body">
-      <textarea id="claude-input" placeholder="Buraya Claude tarafına soracağın şeyi yaz... (sağda strateji / analiz / kod vs.)"></textarea>
-      <div class="controls">
-        <button id="claude-send">Send to Claude</button>
-        <input type="file" id="claude-file" multiple />
-        <span class="usage" id="claude-usage">Tokens: -</span>
-      </div>
-      <div class="output" id="claude-output">Cevap burada görünecek...</div>
-    </div>
-  </section>
-</main>
-<footer>
-  <span>Tip: Aynı promptu iki tarafa da gönderip cevapları kıyaslayabilirsin.</span>
-  <span>Zero@Ecosystem · Local Dev Console</span>
-</footer>
-
-<script>
-async function sendChat(side) {
-  const inputEl = document.getElementById(side + "-input");
-  const outputEl = document.getElementById(side + "-output");
-  const usageEl = document.getElementById(side + "-usage");
-  const modelEl = document.getElementById(side + "-model");
-  const fileEl = document.getElementById(side + "-file");
-  const btnEl = document.getElementById(side + "-send");
-
-  const prompt = inputEl.value.trim();
-  if (!prompt) return;
-
-  const model = modelEl.value;
-  const endpoint = side === "openai" ? "/api/chat/openai" : "/api/chat/claude";
-
-  const formData = new FormData();
-  formData.append("prompt", prompt);
-  formData.append("model", model);
-  formData.append("max_tokens", "600");
-
-  if (fileEl.files && fileEl.files.length > 0) {
-    for (const f of fileEl.files) {
-      formData.append("files", f);
-    }
-  }
-
-  btnEl.disabled = true;
-  btnEl.textContent = "Working...";
-  outputEl.textContent = "Thinking...";
-
-  try {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      outputEl.textContent = "Error: " + errText;
-      usageEl.textContent = "Tokens: error";
-      return;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--zero-gray-light);
+      padding-top: 6px;
     }
 
-    const data = await res.json();
-    if (data.error) {
-      outputEl.textContent = "Error: " + data.error;
-      usageEl.textContent = "Tokens: error";
-      return;
+    footer a {
+      color: var(--zero-navy);
+      text-decoration: none;
     }
 
-    outputEl.textContent = data.answer || "(boş cevap)";
-    const usage = data.usage || {};
-    const inTok = usage.input_tokens ?? usage.prompt_tokens ?? "-";
-    const outTok = usage.output_tokens ?? usage.completion_tokens ?? "-";
-    usageEl.textContent = `Tokens → in: ${inTok} · out: ${outTok}`;
-  } catch (e) {
-    outputEl.textContent = "Error: " + e;
-    usageEl.textContent = "Tokens: error";
-  } finally {
-    btnEl.disabled = false;
-    btnEl.textContent = side === "openai" ? "Send to OpenAI" : "Send to Claude";
-  }
-}
-
-document.getElementById("openai-send").addEventListener("click", () => sendChat("openai"));
-document.getElementById("claude-send").addEventListener("click", () => sendChat("claude"));
-
-document.getElementById("openai-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-    e.preventDefault();
-    sendChat("openai");
-  }
-});
-document.getElementById("claude-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-    e.preventDefault();
-    sendChat("claude");
-  }
-});
-</script>
-
-<!-- PROJECT_HISTORY_START -->
-<style>
-  #project-history {
-    display: flex;
-    gap: 24px;
-    padding: 10px 16px;
-    border-bottom: 1px solid #222;
-    background: #05070b;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-  .history-column {
-    flex: 1;
-  }
-  .history-column h3 {
-    font-size: 13px;
-    margin: 0 0 6px 0;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .history-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .history-column li {
-    display: flex;
-    align-items: center;
-  }
-  .history-pill {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid #333;
-    background: #111;
-    color: #eee;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  .history-pill:hover {
-    border-color: #f9ba00;
-  }
-  .history-link {
-    margin-left: 4px;
-    font-size: 11px;
-    color: #888;
-    text-decoration: none;
-  }
-  .history-link:hover {
-    color: #f9ba00;
-  }
-  @media (max-width: 900px) {
-    #project-history {
-      flex-direction: column;
-      gap: 12px;
+    footer a:hover {
+      text-decoration: underline;
     }
-  }
-</style>
 
-<div id="project-history">
-  <div class="history-column">
-    <h3>ChatGPT Projects</h3>
-    <ul id="openai-history-list"></ul>
-  </div>
-  <div class="history-column">
-    <h3>Claude Projects</h3>
-    <ul id="claude-history-list"></ul>
-  </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const res = await fetch('/static/history.json');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-
-    const openaiList = document.getElementById('openai-history-list');
-    const claudeList = document.getElementById('claude-history-list');
-
-    function addItem(item, parent) {
-      const li = document.createElement('li');
-
-      const btn = document.createElement('button');
-      btn.className = 'history-pill';
-      btn.textContent = item.label;
-      btn.onclick = () => {
-        if (item.url) {
-          window.open(item.url, '_blank', 'noopener,noreferrer');
-        }
-      };
-
-      li.appendChild(btn);
-
-      if (item.url) {
-        const a = document.createElement('a');
-        a.className = 'history-link';
-        a.href = item.url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = '↗';
-        li.appendChild(a);
+    /* Mobile */
+    @media (max-width: 900px) {
+      .container {
+        padding: var(--zero-space-sm);
       }
 
-      parent.appendChild(li);
+      .app-header {
+        padding: var(--zero-space-sm);
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .title-main {
+        font-size: 1.4rem;
+      }
+
+      .dual-layout {
+        flex-direction: column;
+      }
+
+      .console-panel {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="zero-color-bar"></div>
+
+  <header class="app-header">
+    <div class="header-content">
+      <div class="title-group">
+        <div class="title-main">
+          Dual AI Console — Zero<span class="title-at">@</span>Ecosystem
+        </div>
+        <div class="subtitle-main">
+          Solda ChatGPT / OpenAI · Sağda Claude (Anthropic)
+        </div>
+        <div class="subtitle-row">
+          <span>Local · Pay-as-you-go via API keys</span>
+          <span class="badge-soft">ML Ready · Dev playground</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Copy buttons -->
+    <section class="copy-row">
+      <button class="btn-pill" onclick="copyToClaude()">
+        Copy → Claude
+      </button>
+      <button class="btn-pill" onclick="copyToOpenAI()">
+        Copy → ChatGPT
+      </button>
+    </section>
+
+    <!-- Dual consoles -->
+    <section class="dual-layout">
+      <!-- LEFT: ChatGPT / OpenAI -->
+      <article class="console-panel left-theme" id="openai-panel">
+        <div class="console-header left-theme-header">
+          <div class="console-header-left">
+            <div class="console-title console-title-openai">
+              ChatGPT / OpenAI
+            </div>
+            <div class="console-tag">Zero@Console · Local Dev</div>
+          </div>
+          <div class="model-pill">gpt-4.1 / mini</div>
+        </div>
+
+        <div class="console-body">
+          <textarea
+            id="openai-input"
+            class="prompt-input"
+            placeholder="Buraya bana soracağın şeyi yaz... (solda Chatty / OpenAI tarafı)"
+          ></textarea>
+
+          <div class="controls-row">
+            <div class="controls-left">
+              <button class="btn-send" onclick="sendToOpenAI()">
+                ▶ Send to OpenAI
+              </button>
+              <label class="file-label">
+                <input type="file" id="openai-file" />
+                no files selected
+              </label>
+            </div>
+            <div class="tokens-label" id="openai-tokens">
+              Tokens: -
+            </div>
+          </div>
+
+          <div id="openai-output" class="output-box">
+            <span class="output-placeholder">Cevap burada görünecek...</span>
+          </div>
+
+          <div class="tip-row">
+            <strong>İpucu:</strong> Aynı promptu sağ tarafa kopyalamak için yukarıdaki “Copy → Claude”
+            butonunu kullan.
+          </div>
+        </div>
+      </article>
+
+      <!-- RIGHT: Claude -->
+      <article class="console-panel right-theme" id="claude-panel">
+        <div class="console-header right-theme-header">
+          <div class="console-header-left">
+            <div class="console-title console-title-claude">
+              Claude / Anthropic
+            </div>
+            <div class="console-tag">Sonnet / Opus / Haiku</div>
+          </div>
+          <div class="model-pill-light">Sonnet 4.5 (demo)</div>
+        </div>
+
+        <div class="console-body">
+          <textarea
+            id="claude-input"
+            class="prompt-input"
+            placeholder="Buraya Claude tarafına soracağın şeyi yaz... (sağda strateji / analiz / kod vs.)"
+          ></textarea>
+
+          <div class="controls-row">
+            <div class="controls-left">
+              <button class="btn-send" onclick="sendToClaude()">
+                ▶ Send to Claude
+              </button>
+              <label class="file-label">
+                <input type="file" id="claude-file" />
+                no files selected
+              </label>
+            </div>
+            <div class="tokens-label" id="claude-tokens">
+              Tokens: -
+            </div>
+          </div>
+
+          <div id="claude-output" class="output-box">
+            <span class="output-placeholder">Cevap burada görünecek...</span>
+          </div>
+
+          <div class="tip-row">
+            <strong>İpucu:</strong> Soldaki promptu buraya geçirmek için “Copy → Claude”; sağdakini sola
+            geçirmek için “Copy → ChatGPT”.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <div>Zero@Ecosystem · Local Dev Console</div>
+      <div>API entegrasyonu: daha sonra OpenAI & Anthropic anahtarları ile bağlanacak.</div>
+    </footer>
+  </main>
+
+  <script>
+    function copyToClaude() {
+      const src = document.getElementById("openai-input");
+      const dst = document.getElementById("claude-input");
+      if (!src || !dst) return;
+      dst.value = src.value;
+      dst.focus();
+      dst.selectionStart = dst.value.length;
+      dst.selectionEnd = dst.value.length;
     }
 
-    (data.openai || []).forEach(it => addItem(it, openaiList));
-    (data.claude || []).forEach(it => addItem(it, claudeList));
-  } catch (err) {
-    console.error('Project history load error:', err);
-  }
-});
-</script>
-<!-- PROJECT_HISTORY_END -->
+    function copyToOpenAI() {
+      const src = document.getElementById("claude-input");
+      const dst = document.getElementById("openai-input");
+      if (!src || !dst) return;
+      dst.value = src.value;
+      dst.focus();
+      dst.selectionStart = dst.value.length;
+      dst.selectionEnd = dst.value.length;
+    }
 
+    function setOutput(id, text) {
+      const box = document.getElementById(id);
+      if (!box) return;
+      box.innerHTML = "";
+      box.textContent = text;
+    }
+
+    function sendToOpenAI() {
+      const prompt = document.getElementById("openai-input").value.trim();
+      if (!prompt) {
+        setOutput("openai-output", "[Demo] Önce soldaki alana bir şey yaz.");
+        return;
+      }
+      setOutput(
+        "openai-output",
+        "[Demo] Buraya gerçek OpenAI cevabı gelecek.\n\nPrompt:\n" + prompt
+      );
+    }
+
+    function sendToClaude() {
+      const prompt = document.getElementById("claude-input").value.trim();
+      if (!prompt) {
+        setOutput("claude-output", "[Demo] Önce sağdaki alana bir şey yaz.");
+        return;
+      }
+      setOutput(
+        "claude-output",
+        "[Demo] Buraya gerçek Claude cevabı gelecek.\n\nPrompt:\n" + prompt
+      );
+    }
+  </script>
 </body>
 </html>
