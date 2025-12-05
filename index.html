@@ -7,25 +7,25 @@
 
   <style>
     :root {
-      --zero-navy: #02154e;
+      --zero-navy:   #02154e;
       --zero-orange: #f9ba00;
-      --zero-green: #005530;
-      --zero-red: #D51635;
-      --zero-white: #ffffff;
-      --zero-black: #111111;
-      --zero-gray-dark: #555555;
-      --zero-gray-medium: #9E9E9E;
-      --zero-gray-light: #e0e0e0;
-      --zero-gray-bg: #f5f5f7;
+      --zero-green:  #005530;
+      --zero-red:    #D51635;
 
-      --zero-space-xs: 0.5rem;
-      --zero-space-sm: 1rem;
-      --zero-space-md: 1.5rem;
-      --zero-space-lg: 2.5rem;
+      --zero-white:  #ffffff;
+      --zero-black:  #111111;
+      --zero-gray-bg:#f5f5f7;
+      --zero-gray:   #9E9E9E;
+      --zero-gray-line:#e0e0e0;
 
-      --zero-radius-sm: 6px;
-      --zero-radius-md: 10px;
-      --zero-radius-lg: 14px;
+      --space-xs: .5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
     }
 
     * {
@@ -37,28 +37,26 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
                    "Helvetica Neue", Arial, sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.6;
       background: var(--zero-gray-bg);
       color: var(--zero-black);
       padding-top: 4px;
     }
 
-    /* Üst renk şeridi (Zero@Steel tarzı) */
+    /* Üst renk şeridi */
     .zero-color-bar {
       height: 4px;
       width: 100%;
       background: linear-gradient(
         90deg,
         var(--zero-green) 0%,   var(--zero-green) 25%,
-        var(--zero-red) 25%,    var(--zero-red) 50%,
-        var(--zero-navy) 50%,   var(--zero-navy) 75%,
-        var(--zero-orange) 75%, var(--zero-orange) 100%
+        var(--zero-red)   25%,  var(--zero-red)   50%,
+        var(--zero-navy)  50%,  var(--zero-navy)  75%,
+        var(--zero-orange)75%,  var(--zero-orange)100%
       );
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 1000;
     }
 
@@ -66,338 +64,312 @@
     .app-header {
       background: var(--zero-navy);
       color: var(--zero-white);
-      padding: var(--zero-space-md);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      padding: var(--space-md);
       margin-top: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
 
     .header-content {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
-      gap: var(--zero-space-md);
-      justify-content: flex-start;
-    }
-
-    .title-group {
-      display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: .35rem;
     }
 
     .title-main {
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       font-weight: 400;
-      letter-spacing: 0.02em;
+      letter-spacing: .02em;
     }
 
-    .title-at {
-      color: var(--zero-orange);
-    }
+    .title-at { color: var(--zero-orange); }
 
     .subtitle-main {
-      font-size: 0.9rem;
+      font-size: .9rem;
       font-weight: 300;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,.8);
     }
 
     .subtitle-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 0.3rem;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.75);
+      gap: .5rem;
+      font-size: .78rem;
+      color: rgba(255,255,255,.75);
     }
 
     .badge-soft {
-      padding: 3px 9px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.25);
-      font-size: 0.75rem;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.25);
     }
 
     /* Ana container */
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: var(--zero-space-md);
+      padding: var(--space-md) var(--space-sm) var(--space-lg);
     }
 
     /* Copy butonları */
     .copy-row {
       display: flex;
       justify-content: center;
-      gap: 1rem;
-      margin-bottom: var(--zero-space-md);
+      gap: .75rem;
+      margin-bottom: var(--space-md);
       flex-wrap: wrap;
     }
 
     .btn-pill {
       border-radius: 999px;
       border: none;
-      padding: 8px 18px;
-      font-size: 0.9rem;
+      padding: 7px 16px;
+      font-size: .85rem;
       font-weight: 600;
       cursor: pointer;
       background: var(--zero-orange);
       color: #000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 4px rgba(0,0,0,.12);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      gap: 4px;
+      transition: background .15s ease, transform .1s ease, box-shadow .15s ease;
     }
 
     .btn-pill:hover {
       background: #d89b00;
       transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
     }
 
-    /* Dual layout */
+    /* İki panel */
     .dual-layout {
       display: flex;
-      gap: 1rem;
+      gap: .9rem;
       align-items: stretch;
       flex-wrap: wrap;
     }
 
     .console-panel {
       flex: 1 1 340px;
-      border-radius: var(--zero-radius-lg);
+      border-radius: var(--radius-lg);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      min-height: 340px;
+      min-height: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
 
     .console-header {
-      padding: 8px 14px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.5rem;
-      font-size: 0.85rem;
+      gap: .5rem;
+      font-size: .8rem;
     }
 
     .console-header-left {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: .4rem;
     }
 
     .console-title {
       font-weight: 600;
-      letter-spacing: 0.01em;
+      letter-spacing: .01em;
     }
 
     .console-tag {
-      font-size: 0.75rem;
-      opacity: 0.8;
+      font-size: .75rem;
+      opacity: .8;
+    }
+
+    .model-pill,
+    .model-pill-light {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: .75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Sol panel – siyah/beyaz */
+    .console-panel.left-theme {
+      background: #ffffff;
+      color: var(--zero-black);
+      border: 1px solid var(--zero-gray-line);
+    }
+
+    .console-header.left-theme-header {
+      background: #000000;
+      color: #ffffff;
+      border-bottom: 1px solid #000000;
+    }
+
+    .console-title-openai::before {
+      content: "🧡";
+      margin-right: 3px;
     }
 
     .model-pill {
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.35);
-      background: rgba(0,0,0,0.2);
-      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(0,0,0,.2);
+      color: #ffffff;
+    }
+
+    /* Sağ panel – turuncu / beyaz */
+    .console-panel.right-theme {
+      background: #fffaf0;
+      color: var(--zero-black);
+      border: 1px solid rgba(249,186,0,.6);
+    }
+
+    .console-header.right-theme-header {
+      background: var(--zero-orange);
+      color: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .console-title-claude::before {
+      content: "💙";
+      margin-right: 3px;
     }
 
     .model-pill-light {
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: 1px solid var(--zero-orange);
-      background: rgba(249,186,0,0.08);
-      color: var(--zero-black);
-      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,.8);
+      background: rgba(0,0,0,.12);
+      color: #ffffff;
     }
 
     .console-body {
-      padding: 10px 14px 14px;
+      padding: 9px 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       flex: 1;
     }
 
     .prompt-input {
       width: 100%;
       resize: vertical;
-      min-height: 130px;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 0.9rem;
+      min-height: 110px;
+      border-radius: 9px;
+      padding: 7px 9px;
+      font-size: .9rem;
       line-height: 1.5;
-      border: 1px solid var(--zero-gray-light);
+      border: 1px solid var(--zero-gray-line);
       font-family: inherit;
       outline: none;
-      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    .left-theme .prompt-input {
-      background: rgba(0,0,0,0.25);
-      border-color: rgba(255,255,255,0.18);
-      color: #f5f5f5;
-    }
-
-    .left-theme .prompt-input::placeholder {
-      color: rgba(255,255,255,0.55);
-    }
-
-    .right-theme .prompt-input {
       background: #ffffff;
       color: var(--zero-black);
+      transition: border .15s ease, box-shadow .15s ease, background .15s ease;
     }
 
-    .right-theme .prompt-input::placeholder {
-      color: var(--zero-gray-medium);
+    .prompt-input::placeholder {
+      color: #8d8d8d;
     }
 
     .prompt-input:focus {
       border-color: var(--zero-orange);
-      box-shadow: 0 0 0 2px rgba(249,186,0,0.28);
+      box-shadow: 0 0 0 2px rgba(249,186,0,.25);
     }
 
     .controls-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.5rem;
-      margin-top: 4px;
+      gap: .5rem;
+      margin-top: 3px;
       flex-wrap: wrap;
     }
 
     .controls-left {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: .5rem;
       flex-wrap: wrap;
     }
 
     .btn-send {
       border-radius: 999px;
       border: none;
-      padding: 7px 18px;
-      font-size: 0.85rem;
+      padding: 6px 16px;
+      font-size: .8rem;
       font-weight: 600;
       cursor: pointer;
       background: var(--zero-orange);
       color: #000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 4px rgba(0,0,0,.12);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      gap: 4px;
+      transition: background .15s ease, transform .1s ease, box-shadow .15s ease;
     }
 
     .btn-send:hover {
       background: #d89b00;
       transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
     }
 
     .file-label {
-      font-size: 0.75rem;
-      color: var(--zero-gray-medium);
+      font-size: .72rem;
+      color: var(--zero-gray);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .file-label input[type="file"] {
-      font-size: 0.7rem;
+      font-size: .7rem;
     }
 
     .tokens-label {
-      font-size: 0.75rem;
-      color: var(--zero-gray-medium);
+      font-size: .72rem;
+      color: var(--zero-gray);
     }
 
     .output-box {
-      margin-top: 6px;
-      border-radius: 10px;
-      border: 1px solid var(--zero-gray-light);
-      padding: 8px 10px;
-      min-height: 110px;
-      font-size: 0.9rem;
-      line-height: 1.5;
+      margin-top: 4px;
+      border-radius: 9px;
+      border: 1px solid var(--zero-gray-line);
+      padding: 7px 9px;
+      min-height: 95px;
+      font-size: .88rem;
+      line-height: 1.45;
       background: #ffffff;
       overflow-y: auto;
       white-space: pre-wrap;
       word-wrap: break-word;
     }
 
-    .left-theme .output-box {
-      background: rgba(0,0,0,0.18);
-      border-color: rgba(255,255,255,0.15);
-      color: #f5f5f5;
-    }
-
     .output-placeholder {
-      color: var(--zero-gray-medium);
+      color: var(--zero-gray);
     }
 
     .tip-row {
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: var(--zero-gray-medium);
+      margin-top: 4px;
+      font-size: .72rem;
+      color: var(--zero-gray);
     }
 
     .tip-row strong {
       color: var(--zero-navy);
     }
 
-    /* Tema varyantları */
-    .console-panel.left-theme {
-      background: radial-gradient(circle at top left, #2b3245 0%, #0b0f1b 45%, #05060a 100%);
-      color: #f5f5f5;
-    }
-
-    .console-panel.right-theme {
-      background: #fffdf7;
-      color: var(--zero-black);
-      border: 1px solid rgba(249,186,0,0.4);
-    }
-
-    .console-header.left-theme-header {
-      background: transparent;
-      border-bottom: 1px solid rgba(255,255,255,0.18);
-    }
-
-    .console-header.right-theme-header {
-      background: linear-gradient(135deg, #fff2c4 0%, #ffe9a0 60%, #ffe49a 100%);
-      border-bottom: 1px solid rgba(249,186,0,0.65);
-    }
-
-    .console-title-openai::before {
-      content: "🧡";
-      margin-right: 4px;
-    }
-
-    .console-title-claude::before {
-      content: "💙";
-      margin-right: 4px;
-    }
-
     footer {
-      margin-top: var(--zero-space-sm);
-      font-size: 0.75rem;
-      color: var(--zero-gray-medium);
+      margin-top: var(--space-sm);
+      font-size: .72rem;
+      color: var(--zero-gray);
       display: flex;
       justify-content: space-between;
-      gap: 0.5rem;
+      gap: .5rem;
       flex-wrap: wrap;
-      border-top: 1px solid var(--zero-gray-light);
-      padding-top: 6px;
+      border-top: 1px solid var(--zero-gray-line);
+      padding-top: 5px;
     }
 
     footer a {
@@ -405,37 +377,14 @@
       text-decoration: none;
     }
 
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a:hover { text-decoration: underline; }
 
-    /* Mobile */
     @media (max-width: 900px) {
-      .container {
-        padding: var(--zero-space-sm);
-      }
-
-      .app-header {
-        padding: var(--zero-space-sm);
-      }
-
-      .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-
-      .title-main {
-        font-size: 1.4rem;
-      }
-
-      .dual-layout {
-        flex-direction: column;
-      }
-
-      .console-panel {
-        min-height: 0;
-      }
+      .container { padding: var(--space-sm); }
+      .header-content { gap: .4rem; }
+      .title-main { font-size: 1.2rem; }
+      .dual-layout { flex-direction: column; }
+      .console-panel { min-height: 0; }
     }
   </style>
 </head>
@@ -444,41 +393,31 @@
 
   <header class="app-header">
     <div class="header-content">
-      <div class="title-group">
-        <div class="title-main">
-          Dual AI Console — Zero<span class="title-at">@</span>Ecosystem
-        </div>
-        <div class="subtitle-main">
-          Solda ChatGPT / OpenAI · Sağda Claude (Anthropic)
-        </div>
-        <div class="subtitle-row">
-          <span>Local · Pay-as-you-go via API keys</span>
-          <span class="badge-soft">ML Ready · Dev playground</span>
-        </div>
+      <div class="title-main">
+        Dual AI Console — Zero<span class="title-at">@</span>Ecosystem
+      </div>
+      <div class="subtitle-main">
+        Left: ChatGPT/OpenAI · Right: Claude (Anthropic)
+      </div>
+      <div class="subtitle-row">
+        <span>Local · Pay-as-you-go via API keys</span>
+        <span class="badge-soft">ML Ready · Dev Playground</span>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- Copy buttons -->
     <section class="copy-row">
-      <button class="btn-pill" onclick="copyToClaude()">
-        Copy → Claude
-      </button>
-      <button class="btn-pill" onclick="copyToOpenAI()">
-        Copy → ChatGPT
-      </button>
+      <button class="btn-pill" onclick="copyToClaude()">Copy → Claude</button>
+      <button class="btn-pill" onclick="copyToOpenAI()">Copy → ChatGPT</button>
     </section>
 
-    <!-- Dual consoles -->
     <section class="dual-layout">
-      <!-- LEFT: ChatGPT / OpenAI -->
+      <!-- Left: ChatGPT -->
       <article class="console-panel left-theme" id="openai-panel">
         <div class="console-header left-theme-header">
           <div class="console-header-left">
-            <div class="console-title console-title-openai">
-              ChatGPT / OpenAI
-            </div>
+            <div class="console-title console-title-openai">ChatGPT / OpenAI</div>
             <div class="console-tag">Zero@Console · Local Dev</div>
           </div>
           <div class="model-pill">gpt-4.1 / mini</div>
@@ -493,17 +432,13 @@
 
           <div class="controls-row">
             <div class="controls-left">
-              <button class="btn-send" onclick="sendToOpenAI()">
-                ▶ Send to OpenAI
-              </button>
+              <button class="btn-send" onclick="sendToOpenAI()">▶ Send to OpenAI</button>
               <label class="file-label">
                 <input type="file" id="openai-file" />
                 no files selected
               </label>
             </div>
-            <div class="tokens-label" id="openai-tokens">
-              Tokens: -
-            </div>
+            <div class="tokens-label" id="openai-tokens">Tokens: -</div>
           </div>
 
           <div id="openai-output" class="output-box">
@@ -511,19 +446,16 @@
           </div>
 
           <div class="tip-row">
-            <strong>İpucu:</strong> Aynı promptu sağ tarafa kopyalamak için yukarıdaki “Copy → Claude”
-            butonunu kullan.
+            <strong>İpucu:</strong> Soldaki promptu sağa geçirmek için yukarıdaki “Copy → Claude” butonunu kullan.
           </div>
         </div>
       </article>
 
-      <!-- RIGHT: Claude -->
+      <!-- Right: Claude -->
       <article class="console-panel right-theme" id="claude-panel">
         <div class="console-header right-theme-header">
           <div class="console-header-left">
-            <div class="console-title console-title-claude">
-              Claude / Anthropic
-            </div>
+            <div class="console-title console-title-claude">Claude / Anthropic</div>
             <div class="console-tag">Sonnet / Opus / Haiku</div>
           </div>
           <div class="model-pill-light">Sonnet 4.5 (demo)</div>
@@ -538,17 +470,13 @@
 
           <div class="controls-row">
             <div class="controls-left">
-              <button class="btn-send" onclick="sendToClaude()">
-                ▶ Send to Claude
-              </button>
+              <button class="btn-send" onclick="sendToClaude()">▶ Send to Claude</button>
               <label class="file-label">
                 <input type="file" id="claude-file" />
                 no files selected
               </label>
             </div>
-            <div class="tokens-label" id="claude-tokens">
-              Tokens: -
-            </div>
+            <div class="tokens-label" id="claude-tokens">Tokens: -</div>
           </div>
 
           <div id="claude-output" class="output-box">
@@ -556,16 +484,15 @@
           </div>
 
           <div class="tip-row">
-            <strong>İpucu:</strong> Soldaki promptu buraya geçirmek için “Copy → Claude”; sağdakini sola
-            geçirmek için “Copy → ChatGPT”.
+            <strong>İpucu:</strong> Sağdaki promptu sola geçirmek için “Copy → ChatGPT” butonunu kullan.
           </div>
         </div>
       </article>
     </section>
 
     <footer>
-      <div>Zero@Ecosystem · Local Dev Console</div>
-      <div>API entegrasyonu: daha sonra OpenAI & Anthropic anahtarları ile bağlanacak.</div>
+      <div>Zero@Ecosystem · Dual AI Console</div>
+      <div>Bu sürüm statik demodur; OpenAI & Anthropic API entegrasyonu daha sonra bağlanacak.</div>
     </footer>
   </main>
 
