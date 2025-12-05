@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dual AI Console — Cem Edition</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1220;
+      color: #e5e7eb;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 16px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to right, #0b1220, #111827);
+    }
+    header h1 {
+      font-size: 16px;
+      margin: 0;
+    }
+    header span {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      overflow: hidden;
+    }
+    .panel {
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #1f2937;
+    }
+    .panel:first-child {
+      border-left: none;
+      border-right: 1px solid #1f2937;
+    }
+    .panel-header {
+      padding: 8px 12px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #020617;
+    }
+    .panel-header h2 {
+      font-size: 14px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #111827;
+      color: #9ca3af;
+    }
+    .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+      overflow: hidden;
+    }
+    textarea {
+      width: 100%;
+      resize: none;
+      min-height: 80px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 8px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    textarea:focus {
+      outline: 1px solid #f97316;
+      border-color: #f97316;
+    }
+    .output {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px;
+      font-size: 13px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: #f97316;
+      color: #111827;
+      font-weight: 500;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    select {
+      background: #020617;
+      color: #e5e7eb;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+    input[type="file"] {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+    .usage {
+      color: #6b7280;
+      font-size: 11px;
+    }
+    footer {
+      padding: 4px 10px;
+      font-size: 10px;
+      color: #6b7280;
+      border-top: 1px solid #1f2937;
+      background: #020617;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+<!-- WHITE THEME PATCH START -->
+<style>
+  body { background:#ffffff !important; color:#111111 !important; }
+  .chat-column, .chat-panel, .chat-box {
+    background:#ffffff !important; border:1px solid #e0e0e0 !important;
+    border-radius:10px !important;
+  }
+  textarea, input[type=text], input[type=search] {
+    background:#fafafa !important; color:#111 !important;
+    border:1px solid #d0d0d0 !important; border-radius:8px !important;
+  }
+  header, nav, .navbar {
+    background:#ffffff !important; border-bottom:1px solid #e5e5e5 !important;
+  }
+</style>
+<!-- WHITE THEME PATCH END -->
+
+<!-- WHITE THEME V2 PATCH -->
+<style>
+  body {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  }
+
+  /* Ana iki panel + input/output alanları */
+  #openai-output, #anthropic-output,
+  #openai-input, #anthropic-input,
+  .chat-panel, .chat-column, .chat-box,
+  .output-box, .input-box {
+    background: #ffffff !important;
+    color: #111111 !important;
+    border-radius: 10px !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+
+  /* Textarea, pre, kod blokları */
+  textarea, pre, code {
+    font-size: 16px !important;
+    line-height: 1.5;
+    background: #fafafa !important;
+    color: #111111 !important;
+    border-radius: 8px !important;
+    border: 1px solid #d0d0d0 !important;
+  }
+
+  /* Butonlar daha okunaklı dursun */
+  button {
+    font-size: 14px;
+  }
+</style>
+<!-- /WHITE THEME V2 PATCH -->
+
+
+<!-- WHITE THEME V3 PATCH -->
+<style>
+  /* Global font & colors */
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 18px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  }
+
+  /* Bütün layout ve iki paneli zorla beyaz yap */
+  .app-root, .main-layout, .dual-console, .chat-layout,
+  .chat-columns, .chat-column, .chat-panel,
+  .left-pane, .right-pane, .column-left, .column-right,
+  #openai-panel, #anthropic-panel,
+  #openai-output, #anthropic-output {
+    background: #ffffff !important;
+    color: #111111 !important;
+    border-color: #e0e0e0 !important;
+  }
+
+  /* Mesaj kutuları, textarea vs. */
+  textarea, pre, code, .message, .chat-message, .output-box, .input-box {
+    font-size: 17px !important;
+    line-height: 1.55;
+    background: #fafafa !important;
+    color: #111111 !important;
+    border-radius: 8px !important;
+    border: 1px solid #d0d0d0 !important;
+  }
+
+  button {
+    font-size: 15px !important;
+  }
+</style>
+<!-- /WHITE THEME V3 PATCH -->
+
+
+<!-- WHITE THEME V4 PATCH – Nuclear Mode -->
+<style>
+  /* Global */
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 18px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  }
+
+  /* All wrappers, left + right panels */
+  .container, .wrapper, .layout, .main-layout,
+  .dual-console, .chat-container,
+  .chat-columns, .chat-column,
+  .left-panel, .right-panel,
+  .column-left, .column-right,
+  .left-pane, .right-pane,
+  #openai-panel, #anthropic-panel,
+  #openai-output, #anthropic-output {
+      background: #ffffff !important;
+      color: #111111 !important;
+      border-color: #d0d0d0 !important;
+  }
+
+  /* Anything that looks like a chat box */
+  textarea, pre, code, .message, .chat-message,
+  .output-box, .input-box, .chat-output,
+  .result-window, .response-box {
+      background: #fafafa !important;
+      color: #111 !important;
+      font-size: 17px !important;
+      line-height: 1.55;
+      border: 1px solid #d0d0d0 !important;
+      border-radius: 8px !important;
+  }
+
+  /* Catch-all: any div with dark background */
+  div[style*="background:#0"], div[style*="background: #0"],
+  div[style*="background-color:#0"], div[style*="background-color: #0"],
+  div[style*="background:#1"], div[style*="background: #1"] {
+      background: #ffffff !important;
+      color: #111111 !important;
+  }
+
+</style>
+<!-- END WHITE THEME V4 PATCH -->
+
+
+<!-- WHITE THEME V5 – ULTRA OVERRIDE -->
+<style>
+  /* SAĞ PANEL İÇİN EVRENSEL BEYAZ TEMA */
+  .right-panel, .right-pane, .column-right, #claude-panel, #anthropic-panel,
+  .claude-container, .claude-column, .claude-side,
+  [class*="right"], [id*="right"], [class*="anthropic"], [id*="anthropic"] {
+      background: #ffffff !important;
+      color: #111 !important;
+  }
+
+  /* SAĞ CHAT OUTPUT KUTULARI */
+  #anthropic-output, #claude-output,
+  .right-output, .claude-output, .output-box {
+      background: #fafafa !important;
+      color: #111 !important;
+      font-size: 18px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 8px !important;
+      padding: 12px !important;
+  }
+
+  /* SAĞ PANELDE BULUNAN TÜM DIVLERİ BEYAZLA */
+  #anthropic-panel div, #claude-panel div,
+  .right-panel div, .column-right div {
+      background-color: #ffffff !important;
+      color: #111 !important;
+  }
+
+  /* Koyu arka plan içeren her div’i yakala */
+  div[style*="rgb(0"], div[style*="#0"], div[style*="#1"] {
+      background: #ffffff !important;
+      color: #111 !important;
+  }
+</style>
+<!-- END WHITE THEME V5 -->
+
+
+<!-- TYPOGRAPHY PATCH V1 -->
+<style>
+  /* Global font (Apple tarzı, Türkçe karakter tam destek) */
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Helvetica Neue", system-ui, -system-ui, sans-serif;
+    font-size: 18px !important;
+    line-height: 1.6;
+    color: #111111;
+  }
+
+  /* Üstteki prompt input alanları */
+  textarea,
+  .prompt-input,
+  .chat-input,
+  .input-box {
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Cevap alanları (output) */
+  #openai-output,
+  #anthropic-output,
+  .chat-output,
+  .response-box,
+  .output-box,
+  pre,
+  code {
+    font-size: 18px !important;
+    line-height: 1.7 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Helvetica Neue", system-ui, -system-ui, sans-serif;
+  }
+
+  /* Butonlar ve küçük metinler */
+  button,
+  .model-select,
+  .token-info,
+  .header-text,
+  .badge {
+    font-size: 15px !important;
+  }
+
+  /* Placeholder’lar da okunabilir olsun */
+  textarea::placeholder,
+  .prompt-input::placeholder {
+    font-size: 16px;
+    color: #777777;
+  }
+</style>
+<!-- /TYPOGRAPHY PATCH V1 -->
+
+</head>
+<body>
+<header>
+  <div>
+    <h1>Dual AI Console — Zero@Ecosystem</h1>
+    <span>Left: ChatGPT/OpenAI · Right: Claude (Anthropic)</span>
+  </div>
+  <span>Local · Pay-as-you-go via API keys</span>
+</header>
+<main>
+  <!-- LEFT PANEL: OPENAI / CHATGPT -->
+  <section class="panel" id="openai-panel">
+    <div class="panel-header">
+      <h2>🧡 ChatGPT / OpenAI <span class="badge">gpt-4.1 / mini</span></h2>
+      <select id="openai-model">
+        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+        <option value="gpt-4.1">gpt-4.1</option>
+      </select>
+    </div>
+    <div class="body">
+      <textarea id="openai-input" placeholder="Buraya bana soracağın şeyi yaz... (solda Chatty / OpenAI tarafı)"></textarea>
+      <div class="controls">
+        <button id="openai-send">Send to OpenAI</button>
+        <input type="file" id="openai-file" multiple />
+        <span class="usage" id="openai-usage">Tokens: -</span>
+      </div>
+      <div class="output" id="openai-output">Cevap burada görünecek...</div>
+    </div>
+  </section>
+
+  <!-- RIGHT PANEL: CLAUDE -->
+  <section class="panel" id="claude-panel">
+    <div class="panel-header">
+      <h2>💙 Claude / Anthropic <span class="badge">Sonnet / Opus / Haiku</span></h2>
+      <select id="claude-model">
+        <option value="claude-sonnet-4-5-20250929">Sonnet 4.5</option>
+        <option value="claude-opus-4-5-20251101">Opus 4.5</option>
+        <option value="claude-haiku-4-5-20251001">Haiku 4.5</option>
+      </select>
+    </div>
+    <div class="body">
+      <textarea id="claude-input" placeholder="Buraya Claude tarafına soracağın şeyi yaz... (sağda strateji / analiz / kod vs.)"></textarea>
+      <div class="controls">
+        <button id="claude-send">Send to Claude</button>
+        <input type="file" id="claude-file" multiple />
+        <span class="usage" id="claude-usage">Tokens: -</span>
+      </div>
+      <div class="output" id="claude-output">Cevap burada görünecek...</div>
+    </div>
+  </section>
+</main>
+<footer>
+  <span>Tip: Aynı promptu iki tarafa da gönderip cevapları kıyaslayabilirsin.</span>
+  <span>Zero@Ecosystem · Local Dev Console</span>
+</footer>
+
+<script>
+async function sendChat(side) {
+  const inputEl = document.getElementById(side + "-input");
+  const outputEl = document.getElementById(side + "-output");
+  const usageEl = document.getElementById(side + "-usage");
+  const modelEl = document.getElementById(side + "-model");
+  const fileEl = document.getElementById(side + "-file");
+  const btnEl = document.getElementById(side + "-send");
+
+  const prompt = inputEl.value.trim();
+  if (!prompt) return;
+
+  const model = modelEl.value;
+  const endpoint = side === "openai" ? "/api/chat/openai" : "/api/chat/claude";
+
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+  formData.append("model", model);
+  formData.append("max_tokens", "600");
+
+  if (fileEl.files && fileEl.files.length > 0) {
+    for (const f of fileEl.files) {
+      formData.append("files", f);
+    }
+  }
+
+  btnEl.disabled = true;
+  btnEl.textContent = "Working...";
+  outputEl.textContent = "Thinking...";
+
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      outputEl.textContent = "Error: " + errText;
+      usageEl.textContent = "Tokens: error";
+      return;
+    }
+
+    const data = await res.json();
+    if (data.error) {
+      outputEl.textContent = "Error: " + data.error;
+      usageEl.textContent = "Tokens: error";
+      return;
+    }
+
+    outputEl.textContent = data.answer || "(boş cevap)";
+    const usage = data.usage || {};
+    const inTok = usage.input_tokens ?? usage.prompt_tokens ?? "-";
+    const outTok = usage.output_tokens ?? usage.completion_tokens ?? "-";
+    usageEl.textContent = `Tokens → in: ${inTok} · out: ${outTok}`;
+  } catch (e) {
+    outputEl.textContent = "Error: " + e;
+    usageEl.textContent = "Tokens: error";
+  } finally {
+    btnEl.disabled = false;
+    btnEl.textContent = side === "openai" ? "Send to OpenAI" : "Send to Claude";
+  }
+}
+
+document.getElementById("openai-send").addEventListener("click", () => sendChat("openai"));
+document.getElementById("claude-send").addEventListener("click", () => sendChat("claude"));
+
+document.getElementById("openai-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    sendChat("openai");
+  }
+});
+document.getElementById("claude-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault();
+    sendChat("claude");
+  }
+});
+</script>
+
+<!-- PROJECT_HISTORY_START -->
+<style>
+  #project-history {
+    display: flex;
+    gap: 24px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #222;
+    background: #05070b;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .history-column {
+    flex: 1;
+  }
+  .history-column h3 {
+    font-size: 13px;
+    margin: 0 0 6px 0;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .history-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .history-column li {
+    display: flex;
+    align-items: center;
+  }
+  .history-pill {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #333;
+    background: #111;
+    color: #eee;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .history-pill:hover {
+    border-color: #f9ba00;
+  }
+  .history-link {
+    margin-left: 4px;
+    font-size: 11px;
+    color: #888;
+    text-decoration: none;
+  }
+  .history-link:hover {
+    color: #f9ba00;
+  }
+  @media (max-width: 900px) {
+    #project-history {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>
+
+<div id="project-history">
+  <div class="history-column">
+    <h3>ChatGPT Projects</h3>
+    <ul id="openai-history-list"></ul>
+  </div>
+  <div class="history-column">
+    <h3>Claude Projects</h3>
+    <ul id="claude-history-list"></ul>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/static/history.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const openaiList = document.getElementById('openai-history-list');
+    const claudeList = document.getElementById('claude-history-list');
+
+    function addItem(item, parent) {
+      const li = document.createElement('li');
+
+      const btn = document.createElement('button');
+      btn.className = 'history-pill';
+      btn.textContent = item.label;
+      btn.onclick = () => {
+        if (item.url) {
+          window.open(item.url, '_blank', 'noopener,noreferrer');
+        }
+      };
+
+      li.appendChild(btn);
+
+      if (item.url) {
+        const a = document.createElement('a');
+        a.className = 'history-link';
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = '↗';
+        li.appendChild(a);
+      }
+
+      parent.appendChild(li);
+    }
+
+    (data.openai || []).forEach(it => addItem(it, openaiList));
+    (data.claude || []).forEach(it => addItem(it, claudeList));
+  } catch (err) {
+    console.error('Project history load error:', err);
+  }
+});
+</script>
+<!-- PROJECT_HISTORY_END -->
+
+</body>
+</html>
