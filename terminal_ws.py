@@ -1,53 +1,35 @@
+
 import asyncio
-import os
-import pty
-from fastapi import APIRouter, WebSocket
-from fastapi.websockets import WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 
-
-@router.websocket("/ws/terminal")
-async def terminal_ws(ws: WebSocket):
-    """
-    Lokal iMac üzerinde çalışan basit bir PTY terminal.
-    Sadece LAN içinden erişilen Uvicorn instance'ı için.
-    """
+@router.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
     await ws.accept()
-
-    # zsh yoksa "bash" ile değiştirirsin
-    pid, fd = pty.fork()
-    if pid == 0:
-        # Child: shell'i exec et
-        os.execvp("zsh", ["zsh"])
-
-    loop = asyncio.get_event_loop()
-
-    async def read_from_pty():
-        try:
-            while True:
-                data = await loop.run_in_executor(None, os.read, fd, 1024)
-                if not data:
-                    break
-                # Terminal çıktısını web'e gönder
-                await ws.send_text(data.decode(errors="ignore"))
-        except Exception:
-            # Sessizce bit
-            pass
-
-    reader_task = asyncio.create_task(read_from_pty())
-
     try:
+        await ws.send_text("iMac terminale bağlandı. Komut yaz ve Enter'a bas.\\n")
         while True:
-            msg = await ws.receive_text()
-            if msg.strip() == "__EXIT__":
+            cmd = await ws.receive_text()
+            cmd = cmd.strip()
+            if not cmd:
+                continue
+            # Basit exit
+            if cmd in {"exit", "quit"}:
+                await ws.send_text("Bağlantı kapatılıyor...\\n")
                 break
-            os.write(fd, msg.encode())
+
+            # Komutu çalıştır
+            proc = await asyncio.create_subprocess_shell(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.STDOUT,
+            )
+            out, _ = await proc.communicate()
+            text = out.decode("utf-8", errors="ignore")
+            if not text.strip():
+                text = "(Komuttan çıktı gelmedi.)\\n"
+            await ws.send_text(f"$ {cmd}\\n{text}\\n")
     except WebSocketDisconnect:
+        # Sessizce çık
         pass
-    finally:
-        reader_task.cancel()
-        try:
-            os.close(fd)
-        except OSError:
-            pass

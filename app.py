@@ -1,6 +1,6 @@
 import os
-from fastapi import FastAPI
-from terminal_ws import router as terminal_router, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form
+from terminal_ws import router as terminal_router
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List

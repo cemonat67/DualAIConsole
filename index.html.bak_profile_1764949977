@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dual AI Console — Zero@Ecosystem</title>
+  <style>
+    :root {
+      --zero-navy:   #02154e;
+      --zero-orange: #f9ba00;
+      --zero-green:  #005530;
+      --zero-red:    #D51635;
+      --zero-white:  #ffffff;
+      --zero-bg:     #f5f5f7;
+      --zero-border: #e0e0e5;
+      --zero-text:   #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                   "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      background: var(--zero-bg);
+      color: var(--zero-text);
+    }
+
+    .page-shell {
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #ffffff 0, #f5f5f7 120px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 16px 32px;
+    }
+
+    /* Header */
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--zero-navy);
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .header-sub {
+      font-size: 14px;
+      color: #666666;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .header-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #eef0ff;
+      color: var(--zero-navy);
+      font-weight: 600;
+    }
+
+    .header-tag.orange {
+      background: #fff6db;
+      color: #b57700;
+    }
+
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 13px;
+      color: #777;
+    }
+
+    .header-right strong {
+      display: block;
+      color: #444;
+    }
+
+    /* Copy buttons row */
+    .copy-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .copy-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--zero-orange);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+      background: #ffcf33;
+    }
+
+    .copy-btn span.icon {
+      font-size: 15px;
+    }
+
+    /* Panels grid */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 980px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid var(--zero-border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    /* Panel headers */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+    }
+
+    .panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .panel-header-left .pill {
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+    }
+
+    .panel-header-left .label-main {
+      font-weight: 600;
+    }
+
+    .panel-header-right {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+    }
+
+    .panel-header.openai {
+      background: #050711;
+      color: #ffffff;
+    }
+
+    .panel-header.openai .pill {
+      background: #1c2139;
+      color: #ffffff;
+    }
+
+    .panel-header.claude {
+      background: var(--zero-orange);
+      color: #111111;
+    }
+
+    .panel-header.claude .pill {
+      background: rgba(0,0,0,0.12);
+      color: #111111;
+    }
+
+    /* Panel body layout:
+       - Üstte cevap alanı (flex:1, scrollable)
+       - Altta soru alanı (textarea auto-height) + butonlar  */
+    .panel-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 12px 16px 14px;
+      gap: 10px;
+    }
+
+    .output-shell {
+      flex: 1 1 auto;
+      border-radius: 14px;
+      border: 1px solid var(--zero-border);
+      background: #ffffff;
+      padding: 12px 14px;
+      overflow-y: auto;
+      max-height: calc(100vh - 320px);
+    }
+
+    .output-inner {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #222;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .output-placeholder {
+      color: #999;
+      font-style: italic;
+    }
+
+    .input-shell {
+      padding-top: 6px;
+      border-top: 1px dashed #e0e0e5;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .prompt-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--zero-border);
+      padding: 10px 14px;
+      font-size: 14px;
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+      overflow-y: auto;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .prompt-input:focus {
+      border-color: var(--zero-orange);
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(249,186,0,0.35);
+    }
+
+    .send-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--zero-orange);
+      color: #000000;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.25);
+      background: #ffcf33;
+    }
+
+    .send-btn span.icon {
+      font-size: 14px;
+    }
+
+    .panel-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #999;
+    }
+
+    .panel-meta span.tokens {
+      opacity: 0.85;
+    }
+
+    .panel-meta span.tip {
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 26px;
+      font-size: 11px;
+      color: #8a8a8a;
+      text-align: center;
+    }
+
+    .footer strong {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ZERO@ECOSYSTEM HERO HEADER -->
+<div style="
+  width:100%;
+  background:#02154e;
+  color:white;
+  padding:26px 0 30px;
+  margin-bottom:32px;
+  border-bottom:4px solid #f9ba00;
+">
+  <div style="
+    max-width:1320px;
+    margin:0 auto;
+    padding:0 16px;
+  ">
+    <div style="font-size:26px; font-weight:700; letter-spacing:.3px;">
+      Zero<span style='color:#f9ba00'>@</span>Ecosystem
+    </div>
+    <div style="margin-top:6px; font-size:15px; opacity:0.85;">
+      Dual AI Console — ChatGPT & Claude Side-by-Side • Local & Private
+    </div>
+
+    <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+      <span style="
+        background:#fff2c2;
+        color:#8a5b00;
+        padding:2px 10px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.05em;
+      ">ML READY</span>
+
+      <span style="
+        background:#d2e3ff;
+        color:#002b70;
+        padding:2px 10px;
+        border-radius:999px;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.05em;
+      ">DEV PLAYGROUND</span>
+    </div>
+  </div>
+</div>
+
+  <div class="page-shell">
+    <div class="page-inner">
+      <!-- HEADER -->
+      <div class="header-top-row">
+        <div>
+          <div class="header-title">Dual AI Console — Zero@Ecosystem</div>
+          <div class="header-sub">
+            <span>Left: ChatGPT/OpenAI · Right: Claude (Anthropic)</span>
+            <span class="header-tag">ML Ready</span>
+            <span class="header-tag orange">Dev Playground</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <strong>Local · Pay-as-you-go via API keys</strong>
+          <span>Sadece senin OpenAI &amp; Anthropic anahtarlarınla çalışır.</span>
+        </div>
+      </div>
+
+      <!-- COPY BUTTONS -->
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyToClaude()">
+          <span class="icon">⬅️</span>
+          <span>Copy → Claude</span>
+        </button>
+        <button class="copy-btn" onclick="copyToChatGPT()">
+          <span>Copy → ChatGPT</span>
+          <span class="icon">➡️</span>
+        </button>
+      </div>
+
+      <!-- PANELS -->
+      <div class="panels">
+        <!-- LEFT: CHATGPT / OPENAI -->
+        <section class="panel-card" aria-label="ChatGPT / OpenAI panel">
+          <header class="panel-header openai">
+            <div class="panel-header-left">
+              <span>🧡 <span class="label-main">ChatGPT / OpenAI</span></span>
+              <span class="pill">Zero@Console · Local Dev</span>
+            </div>
+            <div class="panel-header-right">
+              gpt-4.1 / mini
+            </div>
+          </header>
+
+          <div class="panel-body">
+            <!-- CEVAP ÜSTTE -->
+            <div class="output-shell">
+              <div id="openai-output" class="output-inner output-placeholder">
+                Cevap burada görünecek…
+              </div>
+            </div>
+
+            <!-- SORU ALTTA -->
+            <div class="input-shell">
+              <div class="input-row">
+                <textarea
+                  id="openai-input"
+                  class="prompt-input"
+                  rows="1"
+                  placeholder="Buraya bana soracağın şeyi yaz… (solda Chatty / OpenAI tarafı)"
+                ></textarea>
+                <button class="send-btn" onclick="sendToOpenAI()">
+                  <span class="icon">▶️</span>
+                  <span>Send to OpenAI</span>
+                </button>
+              </div>
+              <div class="panel-meta">
+                <span class="tip">İpucu: Soldaki promptu sağa kopyalamak için yukarıdaki “Copy → Claude” butonunu kullan.</span>
+                <span class="tokens">Tokens: -</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: CLAUDE / ANTHROPIC -->
+        <section class="panel-card" aria-label="Claude / Anthropic panel">
+          <header class="panel-header claude">
+            <div class="panel-header-left">
+              <span>💙 <span class="label-main">Claude / Anthropic</span></span>
+              <span class="pill">Sonnet / Opus / Haiku</span>
+            </div>
+            <div class="panel-header-right">
+              Sonnet 4.5 (demo)
+            </div>
+          </header>
+
+          <div class="panel-body">
+            <!-- CEVAP ÜSTTE -->
+            <div class="output-shell" style="background:#fff8e2;">
+              <div id="claude-output" class="output-inner output-placeholder">
+                Cevap burada görünecek…
+              </div>
+            </div>
+
+            <!-- SORU ALTTA -->
+            <div class="input-shell">
+              <div class="input-row">
+                <textarea
+                  id="claude-input"
+                  class="prompt-input"
+                  rows="1"
+                  placeholder="Buraya Claude tarafına soracağın şeyi yaz… (sağda strateji / analiz / kod vs.)"
+                ></textarea>
+                <button class="send-btn" onclick="sendToClaude()">
+                  <span class="icon">▶️</span>
+                  <span>Send to Claude</span>
+                </button>
+              </div>
+              <div class="panel-meta">
+                <span class="tip">İpucu: Sağdaki promptu sola kopyalamak için “Copy → ChatGPT” butonunu kullan.</span>
+                <span class="tokens">Tokens: -</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        <strong>
+    <!-- DUAL_HISTORY_SECTION -->
+    <section id="history-section" style="max-width:1320px;margin:32px auto 24px;padding:0 16px;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1 1 0;min-width:260px;">
+          <div style="font-size:13px;font-weight:600;color:#02154e;margin-bottom:8px;">
+            ChatGPT / OpenAI History
+          </div>
+          <div id="openai-history" style="
+            border-radius:12px;
+            border:1px solid #e0e0e0;
+            background:#ffffff;
+            padding:10px 12px;
+            font-size:13px;
+            max-height:180px;
+            overflow:auto;
+          "></div>
+        </div>
+        <div style="flex:1 1 0;min-width:260px;">
+          <div style="font-size:13px;font-weight:600;color:#02154e;margin-bottom:8px;">
+            Claude / Anthropic History
+          </div>
+          <div id="claude-history" style="
+            border-radius:12px;
+            border:1px solid #ffe0a3;
+            background:#fffaf0;
+            padding:10px 12px;
+            font-size:13px;
+            max-height:180px;
+            overflow:auto;
+          "></div>
+        </div>
+      </div>
+    </section>
+
+    Zero@Ecosystem · Dual AI Console</strong><br />
+        Bu sürüm statik demodur; OpenAI &amp; Anthropic API entegrasyonu daha sonra bağlanacak.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-resize textarea (ChatGPT tarzı)
+    function autoResize(el) {
+      if (!el) return;
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 160) + "px";
+    }
+
+    function setOutput(targetId, text) {
+      const el = document.getElementById(targetId);
+      if (!el) return;
+      el.classList.remove("output-placeholder");
+      el.textContent = text;
+    }
+
+    function sendToOpenAI() {
+      const input = document.getElementById("openai-input");
+      const prompt = (input.value || "").trim();
+      if (!prompt) {
+        setOutput("openai-output", "[Demo] Önce alttaki OpenAI alanına bir şey yaz.");
+        return;
+      }
+      setOutput(
+        "openai-output",
+        "[Demo] Buraya gerçek OpenAI cevabı gelecek.\n\nPrompt:\n" + prompt
+      );
+    }
+
+    function sendToClaude() {
+      const input = document.getElementById("claude-input");
+      const prompt = (input.value || "").trim();
+      if (!prompt) {
+        setOutput("claude-output", "[Demo] Önce alttaki Claude alanına bir şey yaz.");
+        return;
+      }
+      setOutput(
+        "claude-output",
+        "[Demo] Buraya gerçek Claude cevabı gelecek.\n\nPrompt:\n" + prompt
+      );
+    }
+
+    function copyToClaude() {
+      const left = document.getElementById("openai-input");
+      const right = document.getElementById("claude-input");
+      if (!left || !right) return;
+      right.value = left.value;
+      autoResize(right);
+    }
+
+    function copyToChatGPT() {
+      const left = document.getElementById("openai-input");
+      const right = document.getElementById("claude-input");
+      if (!left || !right) return;
+      left.value = right.value;
+      autoResize(left);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const openaiInput = document.getElementById("openai-input");
+      const claudeInput = document.getElementById("claude-input");
+
+      [openaiInput, claudeInput].forEach(function (el) {
+        if (!el) return;
+        autoResize(el);
+        el.addEventListener("input", function () {
+          autoResize(el);
+        });
+      });
+    });
+  </script>
+
+<!-- DUAL_HISTORY_SCRIPT -->
+<script>
+  (function() {
+    const MAX_HISTORY = 15;
+
+    function loadHistory(side) {
+      try {
+        const raw = localStorage.getItem('dual_history_' + side);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistory(side, text) {
+      if (!text) return;
+      const list = loadHistory(side);
+      const item = { t: new Date().toISOString(), text: text };
+      list.unshift(item);
+      const trimmed = list.slice(0, MAX_HISTORY);
+      try {
+        localStorage.setItem('dual_history_' + side, JSON.stringify(trimmed));
+      } catch (e) {}
+      renderHistory();
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function renderHistory() {
+      var openaiBox = document.getElementById('openai-history');
+      var claudeBox = document.getElementById('claude-history');
+      if (!openaiBox || !claudeBox) return;
+
+      var sides = [
+        ['openai', openaiBox],
+        ['claude', claudeBox]
+      ];
+
+      sides.forEach(function(pair) {
+        var side = pair[0];
+        var box = pair[1];
+        var list = loadHistory(side);
+
+        if (!list.length) {
+          box.innerHTML = '<div style="opacity:.6;font-size:12px;">Henüz kayıt yok.</div>';
+          return;
+        }
+
+        box.innerHTML = list.map(function(item, idx) {
+          var timeStr = new Date(item.t).toLocaleTimeString();
+          return (
+            '<div data-side="' + side + '" data-idx="' + idx + '" ' +
+            'style="padding:6px 4px;border-bottom:1px solid rgba(0,0,0,0.04);cursor:pointer;">' +
+              '<div style="font-size:11px;opacity:.55;margin-bottom:2px;">' + esc(timeStr) + '</div>' +
+              '<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' +
+                esc(item.text) +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      });
+    }
+
+    function attachClickHandler() {
+      var section = document.getElementById('history-section');
+      if (!section) return;
+      section.addEventListener('click', function(e) {
+        var target = e.target.closest('[data-side]');
+        if (!target) return;
+        var side = target.getAttribute('data-side');
+        var idx = parseInt(target.getAttribute('data-idx') || '0', 10);
+        var list = loadHistory(side);
+        var item = list[idx];
+        if (!item) return;
+
+        var inputId = side === 'openai' ? 'openai-input' : 'claude-input';
+        var el = document.getElementById(inputId);
+        if (el) {
+          el.value = item.text;
+          el.focus();
+        }
+      });
+    }
+
+    // Eski fonksiyonları wrap et
+    var oldSendOpenAI = window.sendToOpenAI;
+    var oldSendClaude = window.sendToClaude;
+
+    window.sendToOpenAI = function() {
+      var el = document.getElementById('openai-input');
+      var prompt = el ? (el.value || '').trim() : '';
+      if (prompt) saveHistory('openai', prompt);
+      if (typeof oldSendOpenAI === 'function') oldSendOpenAI();
+    };
+
+    window.sendToClaude = function() {
+      var el = document.getElementById('claude-input');
+      var prompt = el ? (el.value || '').trim() : '';
+      if (prompt) saveHistory('claude', prompt);
+      if (typeof oldSendClaude === 'function') oldSendClaude();
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderHistory();
+      attachClickHandler();
+    });
+  })();
+</script>
+
+</body>
+</html>
