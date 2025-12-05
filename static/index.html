@@ -798,6 +798,98 @@
   }
 </style>
 
+
+<!-- CEM VIEWPORT SCALE FIX -->
+<style>
+  /* Genel gövde – prod için biraz küçültülmüş temel */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 16px !important;      /* önceki “dev” halinin ~%80’i */
+    line-height: 1.7 !important;
+    color: #111111 !important;
+    background: #ffffff !important;
+  }
+
+  /* Üst başlık / header */
+  h1, header .title {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Üstteki açıklama satırı (Left: ChatGPT / Right: Claude vs.) */
+  .subtitle, header p {
+    font-size: 18px !important;
+  }
+
+  /* Model rozetleri (gpt-4.1 / mini, Sonnet 4.5 vb.) */
+  .model-pill, .model-tag, .model-badge, .pill, .chip {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+  }
+
+  /* Prompt yazdığın textarea’lar */
+  textarea,
+  .prompt-input,
+  .prompt-area {
+    font-size: 18px !important;
+    line-height: 1.7 !important;
+  }
+
+  /* Çıktı / cevap panelleri */
+  .output-panel,
+  .output-box,
+  .response-area,
+  .response-box,
+  #openai-output,
+  #chatgpt-output,
+  #anthropic-output,
+  #claude-output {
+    font-size: 18px !important;
+    line-height: 1.8 !important;
+    color: #111111 !important;
+    background: #ffffff !important;
+  }
+
+  .output-panel *,
+  .output-box *,
+  .response-area *,
+  .response-box *,
+  #openai-output *,
+  #chatgpt-output *,
+  #anthropic-output *,
+  #claude-output * {
+    font-size: 18px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* “Cevap burada görünecek...” placeholder’ları */
+  .output-placeholder,
+  .placeholder,
+  #openai-output::before,
+  #anthropic-output::before,
+  #claude-output::before {
+    font-size: 18px !important;
+    color: #777777 !important;
+  }
+
+  /* Copy butonları, Send to OpenAI / Claude butonları */
+  button,
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Ana satırları biraz merkezi ve derli toplu gösterelim */
+  .top-row,
+  .panel-row {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+</style>
+
 </head>
 <body>
 <header>
