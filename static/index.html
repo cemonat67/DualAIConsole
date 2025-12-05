@@ -338,6 +338,71 @@
       color: #555;
     }
   </style>
+
+<!-- Local Terminal styles -->
+<style>
+  .terminal-shell {
+    max-width: 1280px;
+    margin: 40px auto 80px;
+    background: #02154e;
+    border-radius: 16px;
+    padding: 16px 20px 20px;
+    color: #f5f7ff;
+  }
+  .terminal-shell h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .terminal-box {
+    background: #000000;
+    color: #00ff99;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    padding: 12px 14px;
+    height: 220px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+  }
+  .terminal-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .terminal-input-row input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #d0d0d0;
+    font-size: 14px;
+  }
+  .terminal-input-row button {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: none;
+    background: #f9ba00;
+    color: #111111;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .terminal-input-row button:hover {
+    background: #d89b00;
+  }
+  .terminal-hint {
+    margin-top: 6px;
+    font-size: 11px;
+    opacity: 0.75;
+  }
+  @media (max-width: 900px) {
+    .terminal-box {
+      height: 170px;
+    }
+  }
+</style>
+
 </head>
 <body>
 
@@ -759,6 +824,85 @@ Working style:
       return profile + "\\n\\n---\\n\\nUser request:\\n" + rawUserPrompt;
     }
   </script>
+
+
+<section class="terminal-shell">
+  <h2>iMac Terminal · Local Only</h2>
+  <div id="terminal-box" class="terminal-box">Bağlantı bekleniyor...</div>
+  <div class="terminal-input-row">
+    <input id="terminal-input" type="text" placeholder="Komut yaz ve Enter'a bas..." />
+    <button id="terminal-send" type="button">Gönder</button>
+  </div>
+  <p class="terminal-hint">
+    Bu terminal sadece lokal iMac üzerinde çalışan Uvicorn sunucusuna bağlanır.
+    İnternetten erişime kapalıdır.
+  </p>
+</section>
+
+<script>
+(function() {
+  const box = document.getElementById("terminal-box");
+  const input = document.getElementById("terminal-input");
+  const btn = document.getElementById("terminal-send");
+  if (!box || !input || !btn) return;
+
+  // Cloudflare / GitHub Pages sürümünde gerçek backend yok:
+  const host = window.location.hostname;
+  if (host.indexOf("aiconsole.zeroatecosystem.com") !== -1) {
+    box.textContent = "Terminal sadece lokal iMac (Uvicorn) sürümünde aktiftir.";
+    return;
+  }
+
+  let ws = null;
+
+  function append(text) {
+    box.textContent += text;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function connect() {
+    try {
+      const loc = window.location;
+      const proto = (loc.protocol === "https:") ? "wss://" : "ws://";
+      const wsUrl = proto + loc.host + "/ws/terminal";
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = function() {
+        box.textContent = "> Connected to local terminal\\n";
+      };
+      ws.onmessage = function(evt) {
+        append(evt.data);
+      };
+      ws.onclose = function() {
+        append("\\n[connection closed]\\n");
+      };
+      ws.onerror = function() {
+        append("\\n[connection error]\\n");
+      };
+    } catch (e) {
+      box.textContent = "Terminal bağlantısı kurulamadı: " + e;
+    }
+  }
+
+  function send() {
+    if (!ws || ws.readyState !== 1) return;
+    const cmd = input.value;
+    if (!cmd) return;
+    ws.send(cmd + "\\n");
+    input.value = "";
+  }
+
+  btn.addEventListener("click", send);
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      send();
+    }
+  });
+
+  connect();
+})();
+</script>
 
 </body>
 </html>

@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI
+from terminal_ws import router as terminal_router, UploadFile, File, Form
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List
@@ -12,6 +13,7 @@ STATIC_DIR = BASE_DIR / "static"
 STATIC_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="Dual AI Console")
+app.include_router(terminal_router)
 
 app.add_middleware(
     CORSMiddleware,
